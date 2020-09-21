@@ -12,12 +12,17 @@ class InstagramController extends Controller
     $baseUrl = "https://graph.instagram.com/me/media?";
 
     // アクセストークン取得
-    $accessToken = InstagramToken::select('access_token')->latest()->limit(1)->get();
+    $instagramToken = InstagramToken::select('access_token')->latest()->first();
+    $accessToken = env('INSTAGRAM_TOKEN');
+
+    if ($instagramToken->access_token) {
+      $accessToken = $instagramToken->access_token;
+    }
 
     // パラメーター設定
     $params = array(
       'fields' => implode(',', array('id','caption','permalink','media_url','thumbnail_url')),
-      'access_token' => !$accessToken ? $accessToken : env('INSTAGRAM_TOKEN')
+      'access_token' => $accessToken
     );
 
     //curlセッション初期化
